@@ -1,0 +1,25 @@
+GET http://localhost:3000/pessoa
+
+POST http://localhost:3000/pessoa
+content-type: application/json
+
+{
+      "nome": "Edson",
+      "cpf": "230.492.300-21",
+      "telefone": "6299280-1239",
+      "salario": 3500.00,
+      "profissao": "Progamador Junior FullStack"
+}
+
+###
+PATCH http://localhost:3000/pessoa/1
+content-type: application/json
+
+{
+      "nome": "Rodrigo",
+      "profissao": "Programador Pleno"
+}
+
+###
+DELETE http://localhost:3000/pessoa/1
+content-type: application/json
