@@ -1,4 +1,4 @@
-GET http://localhost:3000/pessoa
+GET http://localhost:3002/pessoa
 
 POST http://localhost:3000/pessoa
 content-type: application/json
