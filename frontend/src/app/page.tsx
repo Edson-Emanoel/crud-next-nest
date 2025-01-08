@@ -13,28 +13,29 @@ interface IPessoa {
 
 export default function Home() {
   const [id, setId] = useState()
-  const [pessoa, setPessoa] = useState<any>({})
 
   const [nome, setNome] = useState("")
   const [cpf, setCpf] = useState("")
   const [telefone, setTelefone] = useState("")
   const [salario, setSalario] = useState(0)
   const [profissao, setProfissao] = useState("")
-
   const [pessoas, setPessoas] = useState<any>([])
+
+  const [filtroNome, setFiltroNome] = useState(""); // Estado para o filtro
+
 
   useEffect(() => {
     obterPessoa()
   }, [])
 
   async function obterPessoa(){
-    const resp = await fetch("http://localhost:3000/pessoa")
+    const resp = await fetch("http://localhost:3001/pessoa")
     const Pessoa = await resp.json()
     setPessoas(Pessoa)
   }
 
   async function criarPessoa() {
-    await fetch('http://localhost:3000/pessoa', {
+    await fetch('http://localhost:3001/pessoa', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +53,7 @@ export default function Home() {
   }
 
   async function alterarPessoa() {
-    await fetch('http://localhost:3000/pessoa/' + id, {
+    await fetch('http://localhost:3001/pessoa/' + id, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +71,7 @@ export default function Home() {
   }
 
   async function excluirPessoa(id: any) {
-    await fetch('http://localhost:3000/pessoa/' + id, {
+    await fetch('http://localhost:3001/pessoa/' + id, {
       method: 'DELETE'
     })
     await obterPessoa()
@@ -79,7 +80,7 @@ export default function Home() {
   async function obterPessoaPorId(id: any) {
     setId(id)
 
-    const res = await fetch("http://localhost:3000/pessoa/" + id)
+    const res = await fetch("http://localhost:3001/pessoa/" + id)
     const pessoa = await res.json()
 
     setNome(pessoa.nome)
@@ -172,11 +173,36 @@ export default function Home() {
     )
   }
 
-  function renderizarPessoa(){
-    return(
-      <div className="w-[400px] flex flex-col">
-        {pessoas.map((pessoa: IPessoa) => (
-          <div key={pessoa.id} className="flex items-center justify-between gap-10 bg-zinc-700 p-2 rounded-md">
+  function filtrarPessoas() {
+    return pessoas.filter((pessoa: IPessoa) =>
+      pessoa.nome.toLowerCase().includes(filtroNome.toLowerCase())
+    );
+  }
+
+  function renderizarFiltro() {
+    return (
+      <div className="w-[400px] flex flex-col mb-5">
+        <input
+          type="text"
+          placeholder="Filtrar por nome"
+          value={filtroNome}
+          onChange={(e) => setFiltroNome(e.target.value)}
+          className="w-full rounded-md h-[35px] px-2 outline-none bg-slate-800 text-gray-300"
+        />
+      </div>
+    );
+  }
+
+  function renderizarPessoa() {
+    const pessoasFiltradas = filtrarPessoas();
+
+    return (
+      <div className="w-[400px] gap-2 flex flex-col">
+        {pessoasFiltradas.map((pessoa: IPessoa) => (
+          <div
+            key={pessoa.id}
+            className="flex items-center justify-between gap-10 bg-zinc-700 p-2 rounded-md"
+          >
             <div>{pessoa.nome}</div>
             <div>{pessoa.profissao}</div>
             <div className="flex gap-1">
@@ -197,12 +223,13 @@ export default function Home() {
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   return(
     <div className="gap-10 flex flex-col items-center justify-center h-screen text-white">
       {renderizarFormPessoa()}
+      {renderizarFiltro()}
       {renderizarPessoa()}
     </div>
   )
