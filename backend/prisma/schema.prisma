@@ -22,3 +22,10 @@ model Pessoa {
   salario Float
   profissao String
 }
+
+model Categoria {
+  id   Int     @id @default(autoincrement())
+  
+  codigo String @unique
+  nome String @unique
+}
